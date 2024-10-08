@@ -11,6 +11,7 @@ public class Category {
         this.name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
+    // Statisk metod för att skapa eller hämta en kategori
     public static Category of(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Category name can't be null");
