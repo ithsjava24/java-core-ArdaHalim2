@@ -72,10 +72,10 @@ public class Warehouse {
         if (!products.containsKey(uuid)) {
             throw new IllegalArgumentException("Product with that id doesn't exist.");
         }
+
         ProductRecord product = products.get(uuid);
-        ProductRecord updatedProduct = new ProductRecord(product.uuid(), product.name(), product.category(), newPrice);
-        products.put(uuid, updatedProduct);
-        changedProducts.add(updatedProduct);
+        product.setPrice(newPrice);
+        changedProducts.add(product);
     }
 
     public List<ProductRecord> getChangedProducts() {

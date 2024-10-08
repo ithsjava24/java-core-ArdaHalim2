@@ -1,6 +1,7 @@
 package org.example.warehouse;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ProductRecord {
@@ -24,6 +25,7 @@ public class ProductRecord {
         return name;
     }
 
+
     public Category category() {
         return category;
     }
@@ -35,4 +37,5 @@ public class ProductRecord {
     public void setPrice(BigDecimal price) {
         this.price = price != null ? price : BigDecimal.ZERO;
     }
+
 }
