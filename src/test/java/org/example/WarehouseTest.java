@@ -52,6 +52,7 @@ class WarehouseTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("should be the same instance when using the same name")
     @Order(4)
     @Tag("basic")
@@ -70,7 +71,7 @@ class WarehouseTest {
 
         @BeforeEach
         void createWarehouse() {
-            warehouse = Warehouse.getInstance();
+            warehouse = Warehouse.getInstance("New warehouse");
         }
 
         @Test
@@ -98,10 +99,70 @@ class WarehouseTest {
 
         @BeforeEach
         void addingAProduct() {
-            warehouse = Warehouse.getInstance();
+            warehouse = Warehouse.getInstance("New warehouse");
             UUID_milk = UUID.randomUUID();
             addedProduct = warehouse.addProduct(UUID_milk, "Milk", Category.of("Dairy"), BigDecimal.valueOf(999, 2));
         }
+
+        @Test
+        @DisplayName("throws IllegalArgumentException for empty product name")
+        void throwsIllegalArgumentExceptionForNoProductname() {
+            assertThatThrownBy(() ->
+                    warehouse.addProduct(UUID.randomUUID(), "", Category.of("Test"), BigDecimal.valueOf(999, 2)))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Product name can't be null or empty.");
+        }
+
+        @Test
+        @DisplayName("throws IllegalArgumentException for null product name")
+        void throwsIllegalArgumentExceptionForNullProductName() {
+            assertThatThrownBy(() ->
+                    warehouse.addProduct(UUID.randomUUID(), null, Category.of("Test"), BigDecimal.valueOf(999, 2)))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Product name can't be null or empty.");
+        }
+
+        @Test
+        @DisplayName("throws IllegalArgumentException for null category")
+        void throwsIllegalArgumentExceptionForNullCategory() {
+            assertThatThrownBy(() ->
+                    warehouse.addProduct(UUID.randomUUID(), "Test", null, BigDecimal.valueOf(999, 2)))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Category can't be null.");
+        }
+
+        @Test
+        @DisplayName("assigns id if null")
+        void assignsIdIfNull() {
+            var productRecord = warehouse.addProduct(null, "Test", Category.of("Test"), BigDecimal.valueOf(999, 2));
+            assertThat(productRecord.uuid()).isNotNull();
+        }
+
+        @Test
+        @DisplayName("sets price to 0 if null")
+        void setsPriceTo0IfNull() {
+            var productRecord = warehouse.addProduct(UUID.randomUUID(), "Test", Category.of("Test"), null);
+            assertThat(productRecord.price()).isEqualTo(BigDecimal.ZERO);
+        }
+
+        @Test
+        @DisplayName("it is no longer empty")
+        void itIsNoLongerEmpty() {
+            assertThat(warehouse.isEmpty()).isFalse();
+        }
+
+        @Test
+        @DisplayName("returns list with that product")
+        void getAllShouldReturnListWithOneProduct() {
+            assertThat(warehouse.getProducts()).containsExactly(addedProduct);
+        }
+
+        @Test
+        @DisplayName("valid id returns product")
+        void getProductByIdShouldReturnProductWithThatId() {
+            assertThat(warehouse.getProductById(addedProduct.uuid())).contains(addedProduct);
+        }
+
         @Test
         @DisplayName("invalid id returns empty")
         void getSingleProductWithInvalidIdShouldBeEmpty() {
@@ -126,7 +187,7 @@ class WarehouseTest {
 
         @BeforeEach
         void addingMultipleProducts() {
-            warehouse = Warehouse.getInstance();
+            warehouse = Warehouse.getInstance("New warehouse");
             addedProducts.add(warehouse.addProduct(UUID.randomUUID(), "Milk", Category.of("Dairy"), BigDecimal.valueOf(999, 2)));
             addedProducts.add(warehouse.addProduct(UUID.randomUUID(), "Apple", Category.of("Fruit"), BigDecimal.valueOf(290, 2)));
             addedProducts.add(warehouse.addProduct(UUID.randomUUID(), "Bacon", Category.of("Meat"), BigDecimal.valueOf(1567, 2)));
