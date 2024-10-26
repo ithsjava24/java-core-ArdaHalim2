@@ -262,4 +262,5 @@ class WarehouseTest {
                     .containsOnly(addedProducts.get(2), addedProducts.get(3));
         }
     }
+
 }
